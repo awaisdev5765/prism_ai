@@ -22,6 +22,7 @@ export 'src/ai_client.dart';
 export 'src/ai_events.dart';
 export 'src/anthropic_stream_client.dart';
 export 'src/chat_message.dart';
+export 'src/embeddings.dart';
 export 'src/gemini_stream_client.dart';
 export 'src/openai_stream_client.dart';
 export 'src/sse_parser.dart';
