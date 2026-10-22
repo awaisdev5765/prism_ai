@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import 'ai_events.dart';
+import 'ai_client.dart';
 import 'chat_message.dart';
 import 'sse_parser.dart';
 
@@ -22,7 +23,7 @@ import 'sse_parser.dart';
 ///   if (event is AiTextDelta) stdout.write(event.text);
 /// }
 /// ```
-final class OpenAiStreamClient {
+final class OpenAiStreamClient implements AiStreamClient {
   OpenAiStreamClient({
     required this.baseUrl,
     this.apiKey,
@@ -47,6 +48,7 @@ final class OpenAiStreamClient {
   /// invokes tools, and terminates with [AiDone]. Errors surface as
   /// [AiError] (the stream does not throw — UI code can just switch on
   /// event types).
+  @override
   Stream<Object> streamChat(
     List<AiChatMessage> messages, {
     required String model,

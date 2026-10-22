@@ -49,11 +49,18 @@ render streaming AI responses as live markdown.
 - `OpenAiStreamClient` — streams `/chat/completions` with auth + headers
 - Typed events: `AiTextDelta`, `AiToolCall`, `AiDone`, `AiError`
 
+## Providers
+
+| Provider | Client | Notes |
+|---|---|---|
+| OpenAI & every OpenAI-compatible host | `OpenAiStreamClient` | OpenAI, Ollama, Groq, DeepSeek, Together, LM Studio, vLLM, Azure |
+| Anthropic (Claude) | `AnthropicStreamClient` | Messages API with tool-use streaming |
+| Google Gemini | `GeminiStreamClient` | `streamGenerateContent` (SSE) |
+
 ## Roadmap
 
-- [ ] Anthropic adapter (SSE)
-- [ ] Gemini adapter (streamGenerateContent)
-- [ ] Chat UI widget with streaming markdown rendering
+- [ ] Chat UI widget with streaming markdown rendering (pairs with prism_markdown)
+- [ ] Embeddings API support
 
 ## License
 
