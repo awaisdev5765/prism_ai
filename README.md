@@ -85,8 +85,25 @@ AiChatView(
 
 ## Roadmap
 
-- [ ] Embeddings API support
-- [ ] Markdown rendering inside assistant bubbles via prism_markdown
+- [x] Embeddings API support
+- [x] Markdown rendering inside assistant bubbles via prism_markdown
+
+## Contributing
+
+Issues, PRs and feature requests are welcome!
+
+```bash
+git clone https://github.com/awaisdev5765/prism_ai.git
+cd prism_ai
+flutter pub get
+flutter test        # 34 tests, all passing
+flutter analyze     # no issues
+```
+
+Before opening a PR:
+- Add tests for new features (the repo uses real local servers for SSE/HTTP tests)
+- Run `flutter analyze` — no issues
+- Update CHANGELOG.md
 
 ## License
 
