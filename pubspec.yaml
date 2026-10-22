@@ -1,6 +1,6 @@
 name: prism_ai
 description: "Lean, provider-agnostic streaming client for AI chat completions — OpenAI, Ollama, Groq, DeepSeek and more, with typed events."
-version: 0.5.0
+version: 0.6.0
 homepage: https://pub.dev/packages/prism_ai
 
 environment:
