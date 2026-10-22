@@ -34,7 +34,7 @@ final class AiChatController extends ChangeNotifier {
   /// Sends a user message and starts a streaming assistant response.
   void sendUserMessage(String text) {
     _messages.add(AiChatMessage.user(text));
-    _messages.add(const AiChatMessage.assistant(''));
+    _messages.add(AiChatMessage.assistant(''));
     isStreaming = true;
     notifyListeners();
   }

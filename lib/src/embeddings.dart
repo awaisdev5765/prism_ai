@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math' as math;
 
 import 'package:http/http.dart' as http;
 
@@ -32,7 +33,7 @@ final class EmbeddingsClient {
   }) async {
     if (inputs.isEmpty) {
       throw ArgumentError.value(inputs, 'inputs', 'must not be empty');
-    }
+  }
 
     final uri = Uri.parse('$baseUrl/embeddings');
     final response = await _client.post(
@@ -42,12 +43,12 @@ final class EmbeddingsClient {
         if (apiKey != null && apiKey!.isNotEmpty)
           'Authorization': 'Bearer $apiKey',
         ..._extraHeaders,
-      },
+    },
       body: jsonEncode({
         'model': model,
         'input': inputs,
         ...extraBody,
-      }),
+    }),
     );
 
     if (response.statusCode != 200) {
@@ -56,7 +57,7 @@ final class EmbeddingsClient {
         '${response.body}',
         statusCode: response.statusCode,
       );
-    }
+  }
 
     final json = jsonDecode(response.body) as Map<String, Object?>;
     final data = json['data'] as List<Object?>? ?? const [];
@@ -65,7 +66,7 @@ final class EmbeddingsClient {
         final ia = (a as Map<String, Object?>?)?['index'];
         final ib = (b as Map<String, Object?>?)?['index'];
         return (ia as num? ?? 0).compareTo(ib as num? ?? 0);
-      });
+    });
 
     return [
       for (final entry in sorted)
@@ -95,3 +96,20 @@ class EmbeddingsException implements Exception {
   String toString() => 'EmbeddingsException: $message'
       '${statusCode != null ? ' (HTTP $statusCode)' : ''}';
 }
+
+/// Computes cosine similarity between two vectors (0.0 = orthogonal,
+/// 1.0 = identical direction). Standard RAG similarity metric.
+double cosineSimilarity(List<double> a, List<double> b) {
+  if (a.length != b.length) {
+      throw ArgumentError('vectors must have the same length '
+          '(${a.length} vs ${b.length})');
+  }
+  var dot = 0.0, normA = 0.0, normB = 0.0;
+  for (var i = 0; i < a.length; i++) {
+    dot += a[i] * b[i];
+    normA += a[i] * a[i];
+    normB += b[i] * b[i];
+  }
+  final d = math.sqrt(normA) * math.sqrt(normB);
+  return d == 0 ? 0.0 : dot / d;
+  }

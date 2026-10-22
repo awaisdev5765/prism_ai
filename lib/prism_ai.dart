@@ -20,6 +20,8 @@ library;
 export 'src/ai_chat_view.dart';
 export 'src/ai_client.dart';
 export 'src/ai_events.dart';
+export 'src/ai_tool.dart';
+export 'src/ai_agent.dart';
 export 'src/anthropic_stream_client.dart';
 export 'src/chat_message.dart';
 export 'src/embeddings.dart';
