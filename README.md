@@ -57,10 +57,36 @@ render streaming AI responses as live markdown.
 | Anthropic (Claude) | `AnthropicStreamClient` | Messages API with tool-use streaming |
 | Google Gemini | `GeminiStreamClient` | `streamGenerateContent` (SSE) |
 
+## Chat UI included
+
+`AiChatView` renders a full streaming chat conversation from an
+`AiChatController` — user/assistant bubbles, typing indicator, auto-scroll:
+
+```dart
+final controller = AiChatController();
+AiChatView(
+  controller: controller,
+  onSendMessage: (text) async {
+    controller.sendUserMessage(text);
+    await for (final event in client.streamChat(
+      controller.messages, model: 'llama3')) {
+      switch (event) {
+        case AiTextDelta(:final text):
+          controller.appendAssistantDelta(text);
+        case AiDone():
+          controller.finishAssistant();
+        case AiError(:final message):
+          controller.reportError(message);
+      }
+    }
+  },
+)
+```
+
 ## Roadmap
 
-- [ ] Chat UI widget with streaming markdown rendering (pairs with prism_markdown)
 - [ ] Embeddings API support
+- [ ] Markdown rendering inside assistant bubbles via prism_markdown
 
 ## License
 

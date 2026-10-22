@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0
+
+- **New widget**: `AiChatView` + `AiChatController` — a ready-made streaming
+  chat UI with user/assistant bubbles, typing indicator, auto-scroll, and
+  an optional input field wired to your client via `onSendMessage`.
+
 ## 0.2.0
 
 - **New provider**: `AnthropicStreamClient` — Anthropic Messages API with

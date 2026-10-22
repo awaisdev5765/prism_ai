@@ -17,6 +17,7 @@
 /// family: stream into `PrismMarkdown` for live AI-response rendering.
 library;
 
+export 'src/ai_chat_view.dart';
 export 'src/ai_client.dart';
 export 'src/ai_events.dart';
 export 'src/anthropic_stream_client.dart';
