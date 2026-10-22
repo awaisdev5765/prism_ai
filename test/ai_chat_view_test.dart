@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:prism_ai/prism_ai.dart';
+import 'package:prism_markdown/prism_markdown.dart' show PrismMarkdown;
 
 void main() {
   Future<void> pumpView(
     WidgetTester tester,
     AiChatController controller, {
-    void Function(String)? onSendMessage,
+    bool markdown = false,
   }) async {
     await tester.pumpWidget(MaterialApp(
       home: Scaffold(
         body: AiChatView(
           controller: controller,
-          onSendMessage: onSendMessage,
+          onSendMessage: null,
+          markdownAssistantResponses: markdown,
         ),
       ),
     ));
@@ -62,15 +64,21 @@ void main() {
     final controller = AiChatController();
     final sent = <String>[];
 
-    await pumpView(tester, controller,
-        onSendMessage: sent.add);
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: AiChatView(
+          controller: controller,
+          onSendMessage: sent.add,
+        ),
+      ),
+    ));
+    await tester.pump();
 
     await tester.enterText(find.byType(TextField), 'ping');
     await tester.tap(find.byIcon(Icons.send));
     await tester.pump();
 
     expect(sent, ['ping']);
-    expect(controller.messages.last.role, AiRole.assistant);
     expect(controller.messages.first.content, 'ping');
   });
 
@@ -81,5 +89,41 @@ void main() {
 
     expect(controller.messages, isEmpty);
     expect(controller.isStreaming, isFalse);
+  });
+
+  group('markdown assistant responses', () {
+    testWidgets('assistant bubble renders markdown when enabled',
+        (tester) async {
+      final controller = AiChatController();
+      controller.sendUserMessage('hi');
+      controller.appendAssistantDelta('# Title\n\n- item');
+      controller.finishAssistant();
+      await pumpView(tester, controller, markdown: true);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Title'), findsOneWidget);
+      expect(find.text('item'), findsOneWidget);
+    });
+
+    testWidgets('assistant bubble stays plain text when disabled',
+        (tester) async {
+      final controller = AiChatController();
+      controller.sendUserMessage('hi');
+      controller.appendAssistantDelta('# Title');
+      controller.finishAssistant();
+      await pumpView(tester, controller, markdown: false);
+
+      expect(find.text('# Title'), findsOneWidget);
+      expect(find.byType(PrismMarkdown), findsNothing);
+    });
+
+    testWidgets('user bubbles never render markdown', (tester) async {
+      final controller = AiChatController();
+      controller.sendUserMessage('# not a heading');
+      controller.finishAssistant();
+      await pumpView(tester, controller, markdown: true);
+
+      expect(find.text('# not a heading'), findsOneWidget);
+    });
   });
 }

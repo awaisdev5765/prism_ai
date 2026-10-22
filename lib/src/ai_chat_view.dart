@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'ai_client.dart';
 import 'chat_message.dart';
+import 'package:prism_markdown/prism_markdown.dart';
 
 /// A ready-made streaming chat UI built on the `prism_ai` event model.
 ///
@@ -87,6 +88,8 @@ final class AiChatView extends StatefulWidget {
     this.assistantBubbleColor,
     this.padding = const EdgeInsets.all(12),
     this.scrollController,
+    this.markdownAssistantResponses = false,
+    this.markdownStyle,
     super.key,
   });
 
@@ -110,6 +113,18 @@ final class AiChatView extends StatefulWidget {
 
   /// Optional external scroll controller (auto-scroll works out of the box).
   final ScrollController? scrollController;
+
+  /// When true, assistant message content is rendered as markdown via
+  /// [PrismMarkdown] instead of plain selectable text — ideal for AI
+  /// responses that contain code blocks, lists and formatting.
+  ///
+  /// Defaults to `false` (plain text) to keep the widget dependency-light
+  /// for consumers who render markdown elsewhere.
+  final bool markdownAssistantResponses;
+
+  /// Optional style override passed to [PrismMarkdown] when
+  /// [markdownAssistantResponses] is true.
+  final PrismMarkdownStyle? markdownStyle;
 
   @override
   State<AiChatView> createState() => _AiChatViewState();
@@ -165,6 +180,20 @@ class _AiChatViewState extends State<AiChatView> {
     widget.onSendMessage?.call(text);
   }
 
+  Widget _bubbleContent(AiChatMessage message, bool isUser, ThemeData theme) {
+    final content = message.content.isEmpty && !isUser
+        ? '…'
+        : message.content;
+    if (!isUser && widget.markdownAssistantResponses) {
+      return PrismMarkdown(
+        content,
+        style: widget.markdownStyle,
+        selectable: true,
+      );
+    }
+    return SelectableText(content, style: theme.textTheme.bodyMedium);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -214,12 +243,8 @@ class _AiChatViewState extends State<AiChatView> {
                               Radius.circular(isUser ? 4 : 16),
                         ),
                       ),
-                      child: SelectableText(
-                        message.content.isEmpty && !isUser
-                            ? '…'
-                            : message.content,
-                        style: theme.textTheme.bodyMedium,
-                      ),
+                      child: _bubbleContent(message, isUser, theme),
+
                     ),
                   );
                 },
